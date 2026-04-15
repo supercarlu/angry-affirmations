@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Daily Sass</title>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: #ffffff;
+    color: #0047AB;
+    font-family: 'Archivo Black', sans-serif;
+    overflow: hidden;
+    position: relative;
+    padding: 2rem;
+  }
+
+  .container {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3rem;
+    max-width: 680px;
+    width: 100%;
+    text-align: center;
+  }
+
+  .affirmation {
+    font-size: clamp(1.6rem, 5vw, 2.8rem);
+    line-height: 1.35;
+    letter-spacing: -0.01em;
+    opacity: 0;
+    transform: translateY(16px);
+    animation: fadeIn 0.6s ease-out forwards;
+    min-height: 3em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  @keyframes fadeIn {
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .buttons {
+    display: flex;
+    gap: 1rem;
+  }
+
+  .btn {
+    font-family: 'Archivo Black', sans-serif;
+    font-size: 0.8rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    border: none;
+    padding: 1rem 2.8rem;
+    cursor: pointer;
+    transition: transform 0.15s ease, background 0.2s ease;
+  }
+
+  .btn:hover {
+    transform: scale(1.04);
+  }
+
+  .btn:active {
+    transform: scale(0.97);
+  }
+
+  .btn-next {
+    color: #ffffff;
+    background: #0047AB;
+  }
+
+  .btn-next:hover {
+    background: #003580;
+  }
+
+  .btn-shuffle {
+    color: #0047AB;
+    background: transparent;
+    border: 2px solid #0047AB;
+  }
+
+  .btn-shuffle:hover {
+    background: rgba(0, 71, 171, 0.06);
+  }
+
+  .day-label {
+    font-family: 'Archivo Black', sans-serif;
+    font-size: 0.65rem;
+    letter-spacing: 0.35em;
+    text-transform: uppercase;
+    color: rgba(0, 71, 171, 0.25);
+    position: fixed;
+    bottom: 2rem;
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <p class="affirmation" id="affirmation"></p>
+  <div class="buttons">
+    <button class="btn btn-next" id="nextBtn">Next</button>
+    <button class="btn btn-shuffle" id="shuffleBtn">Shuffle</button>
+  </div>
+</div>
+<span class="day-label" id="dayLabel"></span>
+
+<script>
+const affirmations = [
+  "I am not for everyone. Good.",
+  "No is a complete sentence.",
+  "I didn't come this far to be polite about it.",
+  "My boundaries are not up for negotiation. Period.",
+  "I am allowed to outgrow people who refuse to water themselves.",
+  "I will not shrink so someone else can feel tall.",
+  "I owe no one an explanation.",
+  "My rest is not laziness. My silence is not weakness. My rage is not irrational.",
+  "I didn't burn out \u2014 I was set on fire by other people's expectations. And now I'm rebuilding on my own damn terms.",
+  "The audacity it took someone to underestimate me is the same energy fueling my next move.",
+  "I am the plot twist no one saw coming.",
+  "Not my circus. Not my clowns. Not my problem.",
+  "I'm not difficult. I just have standards.",
+  "Anyone's discomfort with my confidence is not my issue.",
+  "I will not dim this light. Buy sunglasses.",
+  "I trust my gut more than anyone's opinion.",
+  "I don't hold grudges. I remember facts.",
+  "I am the energy I refuse to tolerate.",
+  "I'd rather be honest than likeable.",
+  "I'm not angry. I'm clear.",
+  "My silence is not agreement. It's restraint.",
+  "If it costs me my peace, it's too expensive.",
+  "I choose myself aggressively today.",
+  "I don't chase. I attract. Or I move on.",
+  "I'm allowed to change my mind. Permanently.",
+  "I don't need anyone's validation. I have a mirror.",
+  "I will no longer set myself on fire to keep others warm.",
+  "Today's energy: unbothered, moisturised, thriving.",
+  "I didn't lose them. I dropped them. There's a difference.",
+  "My potential doesn't need anyone's approval.",
+  "Perfectionism is procrastination in heels. I'm done with both.",
+  "I don't have time to hate anyone. I'm busy being great.",
+  "I will not apologise for taking up space.",
+  "I survived worse. This is just Tuesday.",
+  "I'm not bossy. I have leadership skills and no patience.",
+  "My worth is not determined by anyone's ability to see it.",
+  "I have the right to change, grow, and leave.",
+  "I am not a backup plan. I am plan A or nothing.",
+  "The table was too small so I built my own.",
+  "I'm not for the faint-hearted. Never was.",
+  "Nobody can rush a woman who is rebuilding herself.",
+  "I stopped explaining myself. The right people get it.",
+  "I am soft where I choose and steel where I must.",
+  "I don't compete. I'm in a league of my own.",
+  "My patience ran out. My power didn't.",
+  "I will be kind but I will not be a pushover.",
+  "I am not responsible for anyone's inability to handle my honesty.",
+  "I didn't wake up today to be mediocre.",
+  "The version of me someone created in their head is not my responsibility.",
+  "I will not water myself down because someone can't handle me at full strength.",
+  "I don't need closure from people who never had the depth to understand me.",
+  "My healing doesn't look pretty, and I don't care if it makes anyone uncomfortable.",
+  "I refuse to beg for a seat at a table I built from scratch.",
+  "The only opinion of me that pays my bills is my own.",
+  "I'm not here to fit into anyone's narrative. I'm writing my own.",
+  "I am allowed to be a masterpiece and a work in progress at the same time.",
+  "Anyone's inability to see my worth says everything about their vision, nothing about my value.",
+  "I stopped performing for an audience that never bought a ticket.",
+  "I am done being the bigger person. Today I am the scarier person.",
+  "My energy is expensive. Stop wasting it or start paying up.",
+  "I didn't survive all of that just to play it safe now.",
+  "I am not too much. They are simply not enough.",
+  "The bridge they burned lit my way forward.",
+  "I don't owe consistency to a version of me that no longer exists.",
+  "I will not manage anyone's emotions about my boundaries.",
+  "I am both the lesson and the test no one was prepared for.",
+  "My standards are not walls. They are filters. And not everyone passes.",
+  "I stopped trying to fix people who are committed to staying broken.",
+  "I will not apologise for evolving past the version of me others were comfortable with.",
+  "I don't need everyone to understand me. I need me to understand me.",
+  "I am not cold. I am selective with my warmth and not everyone qualifies.",
+  "I am one bad day away from being everyone's villain, and I'm fine with that.",
+  "Other people's expectations of me are their problem, not my to-do list.",
+  "I'd rather stand alone in my truth than kneel in someone else's comfort zone.",
+  "I am not here to make anyone's insecurity feel at home.",
+  "My growth required letting go of people who only loved me when I was small.",
+  "I will not rehearse my pain to make it digestible for others.",
+  "If someone is intimidated by a woman who knows what she wants, that's their problem.",
+  "I didn't become this person by being agreeable. I became this person by being honest.",
+  "I no longer explain my fire to people who have never been burned.",
+  "Overthinking is just my brain doing squats. It's exhausting but I'm still standing.",
+  "I will not fit myself into a box built with leftover pieces of someone else's fear.",
+  "I don't need a backup plan. I need everyone to get out of the way.",
+  "My boundaries have a strict no-return policy.",
+  "I am the consequence of all the times I didn't speak up. Now I never shut up.",
+  "I healed in silence so the noise others make doesn't reach me anymore.",
+  "I am not rude. I am just no longer willing to pretend.",
+  "They lost access to me and that's a privilege they won't get back.",
+  "I don't have an attitude. I have a personality not everyone can handle.",
+  "My comeback is always stronger than my setback. Take notes.",
+  "I don't adjust my volume for people who never learned to listen.",
+  "The world is not ready for who I am becoming, and honestly, neither am I.",
+  "I am the plot, the twist, and the ending nobody saw coming.",
+  "I used to people-please. Now I people-perplex. Much more fun.",
+  "I would rather be difficult than be taken for granted.",
+  "I attract what I deserve, so everyone else can step aside.",
+  "I am done explaining myself to people who are committed to misunderstanding me.",
+  "I am not healing quietly anymore. I am healing loudly and it will make people uncomfortable.",
+  "I didn't claw my way out of rock bottom to tolerate anyone's lukewarm nonsense.",
+  "I am furious on behalf of every version of me that stayed silent to keep the peace.",
+  "The peace I kept nearly killed me. Never again.",
+  "I am done being palatable. Choke on it.",
+  "I will not be grateful for crumbs from a table I helped build.",
+  "My anger is not ugly. My anger is the first honest thing I've felt in years.",
+  "I am not dramatic. I am finally reacting appropriately to how I've been treated.",
+  "I wasted years making myself smaller and I want every single second back.",
+  "I am allowed to be angry about things I once accepted because I didn't know better.",
+  "I refuse to thank the people who broke me for making me stronger.",
+  "The version of me that tolerated all of that is dead. Send flowers.",
+  "I am not being bitter. I am being accurate.",
+  "Every time someone calls me too intense, I know I'm doing something right.",
+  "I didn't ask for this fight but I will absolutely finish it.",
+  "I would rather be feared than forgotten.",
+  "I burned the bridge, salted the earth, and I'd do it again.",
+  "My kindness was real. So is my fury. Pick which one to meet today.",
+  "I am not sorry for outgrowing a cage someone else built around me.",
+  "I am done being the understanding one. Today I am the understood one, or there will be problems.",
+];
+
+// Fisher-Yates shuffle to create a randomized deck
+function createShuffledDeck() {
+  const indices = Array.from({ length: affirmations.length }, (_, i) => i);
+  for (let i = indices.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [indices[i], indices[j]] = [indices[j], indices[i]];
+  }
+  return indices;
+}
+
+let deck = createShuffledDeck();
+let position = 0;
+
+function showAffirmation(index) {
+  const el = document.getElementById('affirmation');
+  el.style.animation = 'none';
+  el.offsetHeight;
+  el.style.animation = 'fadeIn 0.6s ease-out forwards';
+  el.textContent = affirmations[index];
+}
+
+function next() {
+  position++;
+  if (position >= deck.length) {
+    deck = createShuffledDeck();
+    position = 0;
+  }
+  showAffirmation(deck[position]);
+}
+
+function shuffle() {
+  const remaining = deck.slice(position + 1);
+  for (let i = remaining.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [remaining[i], remaining[j]] = [remaining[j], remaining[i]];
+  }
+  deck = [...deck.slice(0, position + 1), ...remaining];
+  next();
+}
+
+// Day label
+const days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+const now = new Date();
+document.getElementById('dayLabel').textContent =
+  `${days[now.getDay()]} \u00b7 ${months[now.getMonth()]} ${now.getDate()}, ${now.getFullYear()}`;
+
+// Init
+showAffirmation(deck[0]);
+
+document.getElementById('nextBtn').addEventListener('click', next);
+document.getElementById('shuffleBtn').addEventListener('click', shuffle);
+</script>
+</body>
+</html>
